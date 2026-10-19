@@ -49,17 +49,39 @@ form input[type="text"] {
 
 .gist-editor {
     @apply block w-full h-[300px] resize-none rounded-md border border-white bg-emdark-dark font-brand font-regular text-xs text-white focus:border-white focus:outline-none focus:ring-0;
+    border-top: none;
+    border-left: none;
 }
 
 .line-numbers {
-    @apply border border-white font-brand font-regular text-xs text-emdark-light bg-emdark-dark h-[300px] w-[54px] text-right overflow-hidden resize-none
+    @apply border border-white font-brand font-regular text-xs text-emdark-light bg-emdark-dark h-[300px] w-[54px] text-right overflow-hidden resize-none;
     border-right: none;
     border-top: none;
 }
 
 .line-numbers:focus {
     @apply focus:outline-none focus:border-white focus:ring-0;
-    
+
+}
+
+.syntax-area {
+    @apply bg-emsyntax border text-xs border-white h-auto min-w-0 flex-1 overflow-x-auto;
+    border-top: none;
+    border-left: none;
+}
+
+.syntax-numbers {
+    @apply border border-white font-brand leading-[1.5] pt-[20px] pb-[12px] text-xs text-emdark-light bg-emsyntax h-auto w-[54px] shrink-0 whitespace-pre text-right overflow-hidden resize-none;
+    border-right: none;
+    border-top: none;
+}
+
+.syntax-area pre {
+    line-height: 1.5;
+}
+
+.syntax-numbers:focus {
+    @apply focus:outline-none focus:border-white focus:ring-0;
 }
 
 .create_button {
@@ -85,4 +107,67 @@ transform: translateY(-50%);
 border-width: 3px 3px 0 3px;
 border-color: white transparent transparent transparent;
 border-style: solid;
+}
+.interactive-img-btn img:hover {
+    filter: brightness(80%);
+}
+
+.interactive-img-btn img:active {
+    transform: scale(1.1);
+}
+
+.login-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-form-wrap {
+    padding-top: 16px;
+    padding-bottom: 48px;
+}
+
+.login-form > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 0;
+    background: transparent;
+}
+
+.login-form > div > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0;
+}
+
+.login-form label {
+    color: #f2edf2;
+}
+
+.login-form input:not([type="checkbox"]) {
+    min-height: 42px;
+    border-color: #684663;
+    background-color: #080808;
+    color: #ffffff;
+}
+
+.login-form input:not([type="checkbox"]):focus {
+    border-color: #a834a5;
+}
+
+.login-form input[type="checkbox"] {
+    accent-color: #a834a5;
+}
+
+.login-form a {
+    color: #f2edf2;
+}
+
+.login-form button {
+    min-height: 42px;
+    border: 1px solid #a834a5;
+    background-color: #8d2389;
+}
+
+.login-form button:hover {
+    background-color: #631a61;
 }

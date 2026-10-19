@@ -14,6 +14,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        emsyntax: "#0e1116",
+
         emdark: {
           dark: "#010101",
           DEFAULT: "#3C3B3B",

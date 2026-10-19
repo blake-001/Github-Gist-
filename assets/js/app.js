@@ -14,6 +14,7 @@
 //
 //     import "some-package"
 //
+import hljs from "highlight.js"
 
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
@@ -23,9 +24,132 @@ import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
+
+function updateLineNumbers(value, element_id="#line-numbers") {
+    const lineNumberText = document.querySelector(element_id)
+    if (!lineNumberText) return;
+
+    const lines = value.split("\n");
+
+    const numbers = lines.map((_, index) => index + 1).join("\n")
+
+    lineNumberText.value = numbers
+  };
+
+let Hooks = {};
+
+Hooks.Highlight = {
+  mounted() {
+    let name = this.el.getAttribute("data-name");
+    let codeBlock = this.el.querySelector("pre code");
+
+    if (name && codeBlock) {
+      const source = codeBlock.textContent;
+      const syntaxType = this.getSyntaxType(name);
+        codeBlock.className = codeBlock.className.replace(/language-\S+/g, "");
+      codeBlock.classList.add(`language-${syntaxType}`);
+      hljs.highlightElement(codeBlock);
+      updateLineNumbers(source, "#syntax-numbers")
+    }
+  },
+
+  getSyntaxType(name) {
+    let extension = name.split(".").pop();
+    switch (extension) {
+      case "txt":
+          return "text";
+      case "json":
+          return "json";
+      case "html":
+          return "html";
+      case "heex":
+          return "html";
+      case "js":
+          return "javascript";
+      default:
+          return "elixir"
+    }
+  },
+
+};
+
+Hooks.UpdateLineNumbers = {
+  mounted() {
+      const lineNumberText = document.querySelector("#line-numbers")
+
+    this.el.addEventListener("input", () => {
+        updateLineNumbers(this.el.value)
+    })
+
+    this.el.addEventListener("paste", (event) => {
+      if (this.el.value.length !== 0) return
+
+      const pastedText = event.clipboardData?.getData("text/plain")
+      const normalizedText = pastedText?.replace(/^(?:\r\n|\n)/, "")
+      if (!pastedText || normalizedText === pastedText) return
+
+      event.preventDefault()
+      this.el.setRangeText(normalizedText, this.el.selectionStart, this.el.selectionEnd, "end")
+      this.el.dispatchEvent(new Event("input", { bubbles: true }))
+    })
+
+    this.el.addEventListener("scroll", () => {
+      const lineNumberText = document.querySelector("#line-numbers")
+      lineNumberText.scrollTop = this.el.scrollTop
+    })
+
+    this.el.addEventListener("keydown", (e) => {
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const selectionStart = this.el.selectionStart;
+        const selectionEnd = this.el.selectionEnd;
+        this.el.setRangeText("\t", selectionStart, selectionEnd, "end");
+        this.el.dispatchEvent(new Event("input", { bubbles: true }));
+      }
+    })
+
+    this.handleEvent("clear-textareas", () => {
+      this.el.value = ""
+      lineNumberText.value = "1"
+    })
+
+    updateLineNumbers(this.el.value)
+  }
+
+};
+
+Hooks.CopyToClipboard = {
+  mounted() {
+    this.el.addEventListener("click", e => {
+      const textToCopy = this.el.getAttribute("data-clipboard-gist");
+      if (textToCopy) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          console.log("Gist copied to clipboard")
+        }).catch(err => {
+          console.error("Failed to copy text: ", err)
+        })
+      }
+    })
+
+  }
+};
+
+Hooks.ToggleEdit = {
+  mounted() {
+    this.el.addEventListener("click", () => {
+      let edit = document.getElementById("edit-section")
+      let syntax = document.getElementById("syntax-section")
+      if (edit && syntax) {
+          edit.style.display = "block";
+          syntax.style.display = "none";
+      }
+    })
+  }
+};
+
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
-  params: {_csrf_token: csrfToken}
+  params: {_csrf_token: csrfToken}, hooks: Hooks
 })
 
 // Show progress bar on live navigation and form submits

@@ -6,6 +6,8 @@
   import Ecto.Query, warn: false
   alias ElixirGist.Repo
 
+  alias ElixirGist.Accounts.User
+
   alias ElixirGist.Gists.Gist
 
   @doc """
@@ -68,10 +70,18 @@
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_gist(%Gist{} = gist, attrs) do
-    gist
-    |> Gist.changeset(attrs)
-    |> Repo.update()
+  def update_gist(%User{} = user, attrs) do
+    gist = Repo.get!(Gist, attrs["id"])
+
+
+    if user.id == gist.user_id do
+      gist
+      |> Gist.changeset(attrs)
+      |> Repo.update()
+    else
+      {:error, :unauthorized}
+    end
+
   end
 
   @doc """
@@ -86,8 +96,15 @@
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_gist(%Gist{} = gist) do
-    Repo.delete(gist)
+  def delete_gist(%User{} = user, gist_id) do
+    gist = Repo.get!(Gist, gist_id)
+
+    if user.id == gist.user_id do
+      Repo.delete(gist)
+      {:ok, gist}
+    else
+      {:error, :unauthorized}
+    end
   end
 
   @doc """

@@ -1,0 +1,64 @@
+<div class="em-gradient flex items-start justify-between gap-4 p-8">
+    <div class="flex min-w-0 items-start">
+        <img src="/images/user-circle-image.svg" alt="Profile Image" class="round-image-padding h-8 w-8"/>
+        <div class="ml-4 min-w-0">
+            <div class="font-bold text-base text-emlavender-dark">
+                <%= @current_user.email %><span class="text-white">/</span><%= @gist.name %>
+            </div>
+            <div class="text-sm text-white font-bold">
+                <%= @gist.relative %>
+            </div>
+            <p class="mt-1 text-left text-sm text-white font-brand">
+                <%= if String.trim(@gist.description || "") == "" do %>
+                    No description provided.
+                <% else %>
+                    <%= @gist.description %>
+                <% end %>
+            </p>
+        </div>
+    </div>
+    <div class="mr-2 flex shrink-0 items-center">
+        <button class="flex h-8 items-center gap-1 rounded-l-md border border-white bg-empurple px-2 font-bold text-white hover:bg-empurple-dark">
+            <img src="/images/bookmark-outline.svg" alt="" class="h-4 w-4 brightness-0 invert"/> Save
+        </button>
+        <div class="flex h-8 items-center rounded-r-md border border-l-0 border-white bg-transparent px-3 font-brand text-white">
+            0
+        </div>
+    </div>
+</div>
+<div id="edit-section" style="display: none">
+<.live_component 
+module={GistFormComponent} 
+id={@gist.id} 
+form={to_form(Gists.change_gist(@gist))} 
+current_user={@current_user} 
+/>
+</div>
+<div id="syntax-section" style="display: block">
+<div class="justify-center px-28 w-full mb-10">
+    <div class="flex items-center justify-between bg-emdark rounded-t-md border">
+        <div class="w-[300px] pl-2 font-brand font-bold text-base text-emlavender-dark">
+            <%= @gist.name %>
+        </div>
+    <div class="flex items-center gap-1">
+        <%= if @can_manage_gist? do %>
+        <button class="interactive-img-btn flex h-7 w-7 items-center justify-center" type="button" phx-click="delete" phx-value-id={@gist.id}>
+            <img src="/images/delete.svg" alt="Delete Button" class="h-4 w-4 brightness-0 invert" />
+        </button>
+        <button id="edit-btn" class="interactive-img-btn flex h-7 w-7 items-center justify-center" type="button" phx-hook="ToggleEdit">
+            <img src="/images/edit.svg" alt="Edit Button" class="h-4 w-4 brightness-0 invert" />
+        </button>
+        <% end %>
+        <button id="copy-btn" class="interactive-img-btn flex h-7 w-7 items-center justify-center" type="button" phx-hook="CopyToClipboard" data-clipboard-gist={@gist.markup_text} >
+            <img src="/images/copy.svg" alt="Copy Button" class="h-4 w-4 brightness-0 invert" />
+        </button>
+    </div>
+    </div>
+    <div id="gist-wrapper" class="flex w-full min-w-0">
+        <textarea id="syntax-numbers" class="syntax-numbers marker:rounded-bl-md" readonly wrap="off"></textarea>
+        <div id="highlight" class="syntax-area roundedd-br-md" phx-hook="Highlight" data-name={@gist.name}>
+            <pre class="m-0 min-w-max p-3"><code class="language-elixir"><%= @gist.markup_text %></code></pre>
+        </div>
+    </div>
+</div>
+</div>
