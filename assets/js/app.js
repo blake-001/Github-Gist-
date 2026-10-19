@@ -25,8 +25,7 @@ import topbar from "../vendor/topbar"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 
-function updateLineNumbers(value, element_id="#line-numbers") {
-    const lineNumberText = document.querySelector(element_id)
+function updateLineNumbers(value, lineNumberText = document.querySelector("#line-numbers")) {
     if (!lineNumberText) return;
 
     const lines = value.split("\n");
@@ -49,7 +48,7 @@ Hooks.Highlight = {
         codeBlock.className = codeBlock.className.replace(/language-\S+/g, "");
       codeBlock.classList.add(`language-${syntaxType}`);
       hljs.highlightElement(codeBlock);
-      updateLineNumbers(source, "#syntax-numbers")
+      updateLineNumbers(source, this.el.parentElement.querySelector(".syntax-numbers"))
     }
   },
 

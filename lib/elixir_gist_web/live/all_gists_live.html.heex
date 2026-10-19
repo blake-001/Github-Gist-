@@ -1,9 +1,8 @@
-<div class="em-gradient flex items-center justify-center">
-    <h1 class="font-brand font-bold text-3xl text-white">
+<div class="em-gradient all-gists-heading flex items-center justify-center">
+    <h1 class="font-brand font-bold text-lg text-white">
         All Gists
     </h1>
 </div>
 <%= for gist <- @gists do %>
 <.gist gist={gist} current_user={@current_user} />
-<hr />
 <% end %>
